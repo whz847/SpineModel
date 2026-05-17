@@ -1,0 +1,10 @@
+DATASET:
+  NAME: "VindrSpine"
+  ROOT: "/data4/whz/vindr-spinexr/files/vindr-spinexr/1.0.0/"
+  VAL_SPLIT: "test"
+  TEST_SPLIT: "test"
+  TRAIN_SPLIT: "train"
+
+INPUT:
+  PIXEL_MEAN: [0.401457, 0.401457, 0.401457]
+  PIXEL_STD: [0.265538, 0.265538, 0.265538]

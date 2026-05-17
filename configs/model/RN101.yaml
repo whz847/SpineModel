@@ -1,0 +1,24 @@
+MODEL:
+  VISUAL:
+    NAME: "RN101"
+  LANG:
+    NAME: "clip"
+
+INPUT:
+  SIZE: (224, 224)
+  INTERPOLATION: "bicubic"
+
+TRAIN:
+  FINETUNE_CLIP: True
+
+DATALOADER:
+  TRAIN:
+    BATCH_SIZE: 128
+    SHUFFLE: True
+  TEST:
+    BATCH_SIZE: 128
+    SHUFFLE: False
+  VAL:
+    BATCH_SIZE: 128
+    SHUFFLE: False
+  NUM_WORKERS: 4
