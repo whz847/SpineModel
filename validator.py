@@ -8,13 +8,10 @@ from helper import write_logfile
 from utils.metrics import (
     calc_roc,
     calc_map,
-    fbetaMacro,
     fbetaMicro,
     Average_MCC,
     accuracyMacro,
-    precisionMacro,
     precisionMicro,
-    recallMacro,
     recallMicro,
     compute_f1_thresholds,
     compute_dynamic_thresholds,  # New import
@@ -221,11 +218,8 @@ def validate(val_loader, model, cfg, model_name=None):
         map_score,_ = calc_map(y_true, y_pred, num_classes)
         mcc_score = Average_MCC(y_true, y_label, num_classes)
         acc_score, _ = accuracyMacro(y_true, y_label)
-        macro_pcs, _ = precisionMacro(y_true, y_label)
         micro_pcs = precisionMicro(y_true, y_label)
-        macro_rc, _ = recallMacro(y_true, y_label)
         micro_rc = recallMicro(y_true, y_label)
-        marco_f1, _ = fbetaMacro(y_true, y_label)
         micro_f1 = fbetaMicro(y_true, y_label)
         # SAVE_PRED = True
         # if SAVE_PRED:
@@ -236,17 +230,13 @@ def validate(val_loader, model, cfg, model_name=None):
         #     # Save detailed Excel prediction results
         #     save_detailed_predictions(cfg, val_loader, model, y_pred, y_label, y_true, model_name)
     result_dict = {
-        "macro_auc": macro_auc,
         "micro_auc": micro_auc,
         "top10_auc": top_10_mean_auc,
         "mAP_score": map_score,
         "mcc_score": mcc_score,
         "acc_score": acc_score,
-        "macro_pcs": macro_pcs,
         "micro_pcs": micro_pcs,
-        "macro_rc": macro_rc,
         "micro_rc": micro_rc,
-        "marco_f1": marco_f1,
         "micro_f1": micro_f1,
     }
     torch.cuda.empty_cache()
@@ -256,30 +246,23 @@ def validate(val_loader, model, cfg, model_name=None):
 def run_val(epoch, logger, val_loader, model, cfg, model_name):
     result_dict = validate(val_loader, model, cfg, model_name)
 
-    macro_auc = result_dict["macro_auc"]
     micro_auc = result_dict["micro_auc"]
     map_score = result_dict["mAP_score"]
     mcc_score = result_dict["mcc_score"]
     acc_score = result_dict["acc_score"]
-    macro_pcs = result_dict["macro_pcs"]
     micro_pcs = result_dict["micro_pcs"]
-    macro_rc = result_dict["macro_rc"]
     micro_rc = result_dict["micro_rc"]
     marco_f1 = result_dict["marco_f1"]
     micro_f1 = result_dict["micro_f1"]
 
     val_info = (
         f"Test: [{epoch}/{cfg.OPTIM.MAX_EPOCH}]\t"
-        f"Macro_AUC: {macro_auc:.3f}\t"
         f"Micro_AUC: {micro_auc:.3f}\t"
         f"mAP: {map_score:.3f}\t"
         f"MCC: {mcc_score:.3f}\t"
         f"Accuracy: {acc_score:.3f}\t"
-        f"Macro_Precision: {macro_pcs:.3f}\t"
         f"Micro_Precision: {micro_pcs:.3f}\t"
-        f"Macro_Recall: {macro_rc:.3f}\t"
         f"Micro_Recall: {micro_rc:.3f}\t"
-        f"Macro_F1: {marco_f1:.3f}\t"
         f"Micro_F1: {micro_f1:.3f}\t"
     )
     
@@ -297,4 +280,4 @@ def run_val(epoch, logger, val_loader, model, cfg, model_name):
         
     print(val_info)
     write_logfile(val_info, logger)
-    return result_dict["macro_auc"]
+    return result_dict["micro_auc"]
