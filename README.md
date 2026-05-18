@@ -2,11 +2,38 @@
 
 Accurate diagnosis of spinal degenerative diseases requires integration of heterogeneous imaging findings from X-ray, multi-sequence MRI and coexisting pathological conditions. We developed SpineModel, a multimodal and multi-label diagnostic framework that combines disease-aware slice selection, modality attention and a label-coupled hierarchical mixture-of-experts architecture to model disease-specific imaging evidence and comorbidity patterns. SpineModel was trained and validated on a retrospective multicenter cohort with paired spinal X-ray and MRI examinations, as well as on four public datasets. The model achieved an AUC of 85.3%(95% CI: 84.0%, 86.6% ) on the internal dataset comprising 25 spinal disease labels, and consistently outperformed representative medical image classification methods and learnable multi-label prompt-learning baselines on four external public datasets. In a clinician reader study, AI assistance improved diagnostic performance and shortened interpretation time, particularly in cases with multiple coexisting diseases. These findings suggest that clinically structured multimodal learning may support more consistent and efficient spinal imaging diagnosis.
 
+# Key model structure diagram
+## Disease-aware slice selection mechanism
+
+In spinal MRI, many critical lesions are not uniformly distributed throughout the entire volumetric data but are instead concentrated in a few key slices. If average pooling or simple sequential aggregation is applied directly to all MRI slices, the lesion signals may be diluted by a vast amount of normal anatomical background, thereby reducing the model's ability to identify focal lesions. As noted in the main text, the purpose of the disease-aware slice selection mechanism is precisely to select the most diagnostically valuable MRI slices for different diseases based on disease semantic embeddings and slice visual features.
+![img_3.png](img_3.png)
+
+Detailed model diagrams and introductions of the other two core modules, namely the **Expert Prior Knowledge-Guided Modality Attention Mechanism** and **Label-Coupled Hierarchical Mixture-of-Experts**, are presented in the supplementary materials of the paper.
+
 # Installation Instructions
 
-## 1. Environment Configuration
+## 1. Environment Configuration:
 
-The environment.yml contains all the necessary environment configurations for this project. Training and validation were conducted on a 24GB RTX 3090 GPU with CUDA 11.7.
+- python==3.9.25
+- timm==1.0.7
+- tokenizers==0.22.2
+ - torch==2.6.0+cu118
+- torchaudio==2.6.0+cu118
+- torchvision==0.21.0+cu118
+- opencv-python==4.12.0.88
+- opencv-python-headless==4.12.0.88
+- openpyxl==3.1.5
+- packaging==25.0
+- pandas==2.3.3
+- pillow==11.3.0
+- pydicom==2.4.4
+- scikit-learn==1.6.1
+- scipy==1.13.1
+- seaborn==0.13.2
+
+...
+
+The environment.yml contains all the necessary environment configurations for this project. Training and validation were conducted on a 24GB RTX 3090 GPU with CUDA 11.8.
 
 ```python
 conda env create -f environment.yml
@@ -76,7 +103,7 @@ CUDA_VISIBLE_DEVICES=1 python train.py -nc configs/model/RN50.yaml -dc configs/d
 
 In the command above, **RN50.yaml** sets some hyperparameters for training, **first_XMRI.yaml** contains hyperparameter settings for the dataset, **--dataset_dir** is the absolute path to the dataset (pay attention to the correct location), **--max_epochs** is the number of training epochs, **--output_dir** is the output path for model weights and other files, **--test_file_path**, **--val_file_path**, and **--train_file_path** are the paths to JSON files for test, validation, and training sets respectively, and **--start_afresh** indicates whether to start training from scratch (default is False).
 
-## 4. How to apply SpineModel to your own dataset
+## 4. How to apply SpineModel to your own dataset:
 
 The following files need to be modified accordingly based on your dataset.
 - build_dataset.py
@@ -87,4 +114,9 @@ The following files need to be modified accordingly based on your dataset.
 - test_hierarchical_moe.py
 - SpineModel.py
 
-# Grad-CAM visualization
+# Performance demonstration of SpineModel
+## 1.Comparative experiments of SpineModel with six methods across five datasets
+![img_1.png](img_1.png)
+
+## 2. Grad-CAM visualization
+![img_2.png](img_2.png)
